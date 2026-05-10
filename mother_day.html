@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Happy Mother's Day 🌷</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Lato', sans-serif;
+    background: #fffbe6;
+    min-height: 100vh;
+    padding: 20px 16px 40px;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse 600px 300px at 10% 0%, rgba(255,215,0,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 400px 400px at 90% 100%, rgba(255,193,7,0.15) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrap { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 18px; }
+
+  .tulip-strip {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+
+  .tulip-strip .tulip-img {
+    width: 70px; height: 70px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 3px solid #f5c518;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    transition: transform 0.3s;
+    background: #fff9c4;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    overflow: hidden;
+  }
+  .tulip-strip .tulip-img img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .tulip-strip .tulip-img:hover { transform: scale(1.1) rotate(-5deg); }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 6vw, 38px);
+    color: #b8860b;
+    text-shadow: 1px 1px 0 #fff3b0;
+    line-height: 1.2;
+  }
+
+  .subtitle { color: #9a7209; font-size: 15px; margin-top: 6px; }
+
+  .audio-wrap {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin: 12px 0;
+    background: #fff8d6; border: 1.5px solid #f5c518; border-radius: 50px;
+    padding: 8px 20px; font-size: 13px; color: #9a7209;
+  }
+
+  .play-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: #f5c518; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; color: #7a5200;
+    transition: background 0.2s, transform 0.1s; flex-shrink: 0;
+  }
+  .play-btn:hover { background: #e0b015; transform: scale(1.05); }
+
+  .score-bar {
+    display: flex; justify-content: center; gap: 24px;
+    margin: 10px 0 16px; font-size: 14px; color: #9a7209; font-weight: 700;
+  }
+  .score-bar span { display: flex; align-items: center; gap: 5px; }
+  .score-val { font-size: 18px; color: #b8860b; }
+
+  #game {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 0 auto;
+  }
+
+  .card {
+    position: relative;
+    width: 100%;
+    padding-top: 100%;
+    perspective: 600px;
+    -webkit-perspective: 600px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .card-inner {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    -webkit-transition: -webkit-transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    border-radius: 14px;
+  }
+
+  .card.flipped .card-inner, .card.matched .card-inner {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+  }
+
+  .card-front, .card-back {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+
+  .card-front {
+    background: linear-gradient(135deg, #ffd84d 0%, #f5c518 50%, #e8b800 100%);
+    border: 2px solid #e0b015;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    font-size: 30px;
+  }
+
+  .card-back {
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg);
+    background: #fff;
+    border: 2px solid #f5c518;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    font-size: 40px;
+  }
+
+  .card-back img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; }
+
+  .card.matched .card-back {
+    border-color: #4caf50;
+    box-shadow: 0 0 0 3px rgba(76,175,80,0.25);
+  }
+
+  #message {
+    text-align: center; font-size: 22px; font-weight: 700;
+    color: #b8860b; min-height: 32px; margin-top: 16px;
+  }
+
+  #endingCard {
+    display: none;
+    margin-top: 20px;
+    background: #fff; border-radius: 20px;
+    border: 2.5px solid #f5c518;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    padding: 24px 20px; text-align: center;
+  }
+
+  .giraffe-row {
+    display: flex; justify-content: center; gap: 14px;
+    margin-bottom: 14px; font-size: 60px;
+  }
+  .giraffe-row span {
+    display: inline-block;
+    animation: bounce 1.5s ease-in-out infinite;
+  }
+  .giraffe-row span:nth-child(2) { animation-delay: 0.3s; }
+  .giraffe-row span:nth-child(3) { animation-delay: 0.6s; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .ending-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; color: #b8860b; margin-bottom: 10px;
+  }
+
+  .ending-body { font-size: 15px; color: #7a6200; line-height: 1.8; }
+
+  .tulip-gallery {
+    display: flex; justify-content: center; gap: 8px;
+    margin-top: 14px; flex-wrap: wrap;
+  }
+  .tulip-gallery img {
+    width: 80px; height: 80px; object-fit: cover;
+    border-radius: 12px; border: 2px solid #f5c518;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  .btn-restart {
+    display: block; margin: 18px auto 0;
+    padding: 12px 28px; border: none; border-radius: 50px;
+    background: linear-gradient(135deg, #f5c518, #e0a800);
+    color: #5a3c00; font-size: 15px; font-weight: 700;
+    cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+    transition: transform 0.15s, box-shadow 0.15s; letter-spacing: 0.3px;
+  }
+  .btn-restart:hover { transform: translateY(-2px); box-shadow: 0 5px 14px rgba(0,0,0,0.16); }
+  .btn-restart:active { transform: scale(0.97); }
+
+  #confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+
+<div class="page-wrap">
+
+  <header>
+    <div class="tulip-strip">
+      <div class="tulip-img">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Yellow_tulip.jpg/320px-Yellow_tulip.jpg" alt="yellow tulip" onerror="this.parentElement.textContent='🌷'">
+      </div>
+      <div class="tulip-img">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Yellow_tulips.jpg/320px-Yellow_tulips.jpg" alt="yellow tulips" onerror="this.parentElement.textContent='💛'">
+      </div>
+      <div class="tulip-img">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Yellow_tulip.jpg/320px-Yellow_tulip.jpg" alt="yellow tulip" onerror="this.parentElement.textContent='🌷'">
+      </div>
+    </div>
+    <h1>Happy Mother's Day 🌷</h1>
+    <p class="subtitle">Match all the cards to reveal your surprise 💛</p>
+  </header>
+
+  <div class="audio-wrap">
+    <button class="play-btn" id="playBtn" onclick="toggleAudio()" aria-label="Play music">▶</button>
+    <span>Play some music while you play 🎵</span>
+  </div>
+
+  <audio id="bgMusic" loop playsinline webkit-playsinline x-webkit-airplay="deny" preload="none">
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+  </audio>
+
+  <div class="score-bar">
+    <span>Matches <span class="score-val" id="matchCount">0</span>/8</span>
+    <span>Moves <span class="score-val" id="moveCount">0</span></span>
+  </div>
+
+  <div id="game"></div>
+  <div id="message"></div>
+
+  <div id="endingCard">
+    <div class="giraffe-row">
+      <span>🦒</span><span>🦒</span><span>🦒</span>
+    </div>
+    <p class="ending-title">🌷 Happy Mother's Day, Chanel! 🌷</p>
+    <p class="ending-body">
+      You make life brighter like sunshine ☀️<br>
+      I hope your day is filled with tulips, happiness,<br>
+      and maybe a giraffe or two 🦒💛
+    </p>
+    <div class="tulip-gallery">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Yellow_tulip.jpg/320px-Yellow_tulip.jpg" alt="tulip" onerror="this.style.display='none'">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Yellow_tulips.jpg/320px-Yellow_tulips.jpg" alt="tulips" onerror="this.style.display='none'">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Yellow_tulip.jpg/320px-Yellow_tulip.jpg" alt="tulip" onerror="this.style.display='none'">
+    </div>
+  </div>
+
+  <button class="btn-restart" onclick="setupGame()">🔄 Restart</button>
+</div>
+
+<script>
+const CARDS = [
+  { key: 'tulip1',   type: 'emoji', value: '🌷' },
+  { key: 'sun',      type: 'emoji', value: '☀️' },
+  { key: 'heart',    type: 'emoji', value: '💛' },
+  { key: 'flower',   type: 'emoji', value: '🌸' },
+  { key: 'giraffe',  type: 'emoji', value: '🦒' },
+  { key: 'bouquet',  type: 'emoji', value: '💐' },
+  { key: 'photo1',   type: 'image', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Yellow_tulip.jpg/320px-Yellow_tulip.jpg', fallback: '🌼' },
+  { key: 'photo2',   type: 'image', value: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Yellow_tulips.jpg/320px-Yellow_tulips.jpg', fallback: '🌻' },
+];
+
+let firstCard = null, secondCard = null;
+let lockBoard = false, matches = 0, moves = 0;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function setupGame() {
+  const game = document.getElementById('game');
+  game.innerHTML = '';
+  matches = 0; moves = 0; firstCard = null; secondCard = null; lockBoard = false;
+  document.getElementById('message').textContent = '';
+  document.getElementById('endingCard').style.display = 'none';
+  document.getElementById('matchCount').textContent = '0';
+  document.getElementById('moveCount').textContent = '0';
+  stopConfetti();
+
+  shuffle([...CARDS, ...CARDS]).forEach(card => {
+    const el = document.createElement('div');
+    el.classList.add('card');
+    el.dataset.key = card.key;
+
+    const inner = document.createElement('div');
+    inner.classList.add('card-inner');
+
+    const front = document.createElement('div');
+    front.classList.add('card-front');
+    front.textContent = '🌷';
+
+    const back = document.createElement('div');
+    back.classList.add('card-back');
+
+    if (card.type === 'image') {
+      const img = document.createElement('img');
+      img.src = card.value;
+      img.alt = card.key;
+      img.onerror = () => { back.removeChild(img); back.textContent = card.fallback; };
+      back.appendChild(img);
+    } else {
+      back.textContent = card.value;
+    }
+
+    inner.appendChild(front);
+    inner.appendChild(back);
+    el.appendChild(inner);
+    el.addEventListener('click', flipCard);
+    game.appendChild(el);
+  });
+}
+
+function flipCard() {
+  if (lockBoard || this === firstCard || this.classList.contains('matched')) return;
+  this.classList.add('flipped');
+  if (!firstCard) { firstCard = this; return; }
+  secondCard = this;
+  lockBoard = true;
+  moves++;
+  document.getElementById('moveCount').textContent = moves;
+
+  if (firstCard.dataset.key === secondCard.dataset.key) {
+    firstCard.classList.add('matched');
+    secondCard.classList.add('matched');
+    matches++;
+    document.getElementById('matchCount').textContent = matches;
+    resetTurn();
+    if (matches === 8) {
+      setTimeout(() => {
+        document.getElementById('message').textContent = "🎉 You Won! Happy Mother's Day! 🎉";
+        document.getElementById('endingCard').style.display = 'block';
+        launchConfetti();
+      }, 400);
+    }
+  } else {
+    setTimeout(() => {
+      firstCard.classList.remove('flipped');
+      secondCard.classList.remove('flipped');
+      resetTurn();
+    }, 950);
+  }
+}
+
+function resetTurn() { firstCard = null; secondCard = null; lockBoard = false; }
+
+function toggleAudio() {
+  const audio = document.getElementById('bgMusic');
+  const btn = document.getElementById('playBtn');
+  if (audio.paused) {
+    const p = audio.play();
+    if (p !== undefined) {
+      p.then(() => { btn.textContent = '⏸'; }).catch(() => { btn.textContent = '▶'; });
+    } else { btn.textContent = '⏸'; }
+  } else {
+    audio.pause();
+    btn.textContent = '▶';
+  }
+}
+
+let confettiInterval = null;
+const confettiColors = ['#f5c518','#ffd84d','#ff6b6b','#88d8b0','#ffb347','#fff176'];
+
+function launchConfetti() {
+  const canvas = document.getElementById('confetti');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = Array.from({length: 130}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * -canvas.height,
+    r: 5 + Math.random() * 7,
+    d: 2 + Math.random() * 3,
+    color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+    tilt: Math.random() * 10 - 5,
+    tiltSpeed: 0.1 + Math.random() * 0.15
+  }));
+
+  let frame = 0;
+  confettiInterval = setInterval(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      ctx.beginPath(); ctx.lineWidth = p.r; ctx.strokeStyle = p.color;
+      ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+      ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+      ctx.stroke();
+      p.y += p.d; p.tilt += p.tiltSpeed;
+      if (p.y > canvas.height) { p.y = -20; p.x = Math.random() * canvas.width; }
+    });
+    frame++;
+    if (frame > 320) stopConfetti();
+  }, 16);
+}
+
+function stopConfetti() {
+  if (confettiInterval) { clearInterval(confettiInterval); confettiInterval = null; }
+  const c = document.getElementById('confetti');
+  c.getContext('2d').clearRect(0, 0, c.width, c.height);
+}
+
+setupGame();
+</script>
+</body>
+</html>
